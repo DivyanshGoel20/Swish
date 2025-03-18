@@ -1,8 +1,19 @@
-import React from 'react';
+import { useAccount } from 'wagmi';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+// import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const Layout: React.FC = () => {
+const Layout = () => {
+  const { isConnected, address, status } = useAccount();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (status === 'disconnected' || (!isConnected && !address)) {
+      navigate('/');
+    }
+  }, [status, isConnected, address, navigate]);
   return (
     <motion.div
       initial={{ opacity: 0 }}
