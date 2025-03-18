@@ -4,6 +4,8 @@ import { useAccount } from 'wagmi';
 import { Edit2, Check, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Image as ImageIcon } from 'lucide-react';
+import { useProfileStore } from '../store/useProfileStore';
+
 
 const Profile: React.FC = () => {
 
@@ -19,26 +21,9 @@ const Profile: React.FC = () => {
   const [isMinting, setIsMinting] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const navigate = useNavigate();
-  const [profile, setProfile] = useState(() => {
-    if (!address) return {
-      name: '',
-      username: '',
-      bio: '',
-      imagePreview: '',
-      nftMinted: false,
-    };
 
-    const saved = localStorage.getItem(`profile-${address}`);
-    return saved
-      ? JSON.parse(saved)
-      : {
-        name: '',
-        username: '',
-        bio: '',
-        imagePreview: '',
-        nftMinted: false,
-      };
-  });
+const profile = useProfileStore((state) => state.profile);
+const setProfile = useProfileStore((state) => state.setProfile);
 
   const [editForm, setEditForm] = useState<EditFormData>({
     name: '',
@@ -185,8 +170,8 @@ const Profile: React.FC = () => {
                 {isEditing ? (
                   <div className="space-y-3">
                     <div>
-                    <h3 className="text-xl font-semibold text-white">Name</h3>
-                    <input
+                      <h3 className="text-xl font-semibold text-white">Name</h3>
+                      <input
                         type="text"
                         value={editForm.name}
                         onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
@@ -196,8 +181,8 @@ const Profile: React.FC = () => {
                     </div>
 
                     <div>
-                    <h3 className="text-xl font-semibold text-white">Username</h3>
-                    <input
+                      <h3 className="text-xl font-semibold text-white">Username</h3>
+                      <input
                         type="text"
                         value={editForm.username}
                         onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}

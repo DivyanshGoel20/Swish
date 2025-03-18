@@ -3,13 +3,15 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAccount, useDisconnect } from 'wagmi';
 import { LogOut, User } from 'lucide-react';
+import { useProfileStore } from '../store/useProfileStore';
 
 const Dashboard: React.FC = () => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const navigate = useNavigate();
 
-  const profile = address ? JSON.parse(localStorage.getItem(`profile-${address}`) || '{}') : {};
+const profile = useProfileStore((state) => state.profile);
+const setProfile = useProfileStore((state) => state.setProfile);
 
   const handleLogout = () => {
     disconnect();

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Upload, Check, X, Image as ImageIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +8,17 @@ const CreateProfile: React.FC = () => {
   const { address } = useAccount();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!address) return;
+  
+    const profileKey = `profile-${address}`;
+    const storedProfile = localStorage.getItem(profileKey);
+  
+    if (storedProfile) {
+      navigate('/dashboard');
+    }
+  }, [address, navigate]);
   
   const [formData, setFormData] = useState({
     name: '',
