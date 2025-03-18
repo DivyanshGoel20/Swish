@@ -1,39 +1,82 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAccount } from 'wagmi';
 import { Edit2, Check, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Image as ImageIcon } from 'lucide-react';
 
 const Profile: React.FC = () => {
+
+  type EditFormData = {
+    name: string;
+    username: string;
+    bio: string;
+    imagePreview: string;
+  };
+
   const { address } = useAccount();
   const [isEditing, setIsEditing] = useState(false);
   const [isMinting, setIsMinting] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const navigate = useNavigate();
   const [profile, setProfile] = useState(() => {
-    return address ? JSON.parse(localStorage.getItem(`profile-${address}`) || '{}') : {};
+    if (!address) return {
+      name: '',
+      username: '',
+      bio: '',
+      imagePreview: '',
+      nftMinted: false,
+    };
+
+    const saved = localStorage.getItem(`profile-${address}`);
+    return saved
+      ? JSON.parse(saved)
+      : {
+        name: '',
+        username: '',
+        bio: '',
+        imagePreview: '',
+        nftMinted: false,
+      };
   });
-  const [editForm, setEditForm] = useState(profile);
+
+  const [editForm, setEditForm] = useState<EditFormData>({
+    name: '',
+    username: '',
+    bio: '',
+    imagePreview: '',
+  });
+
 
   const handleEdit = () => {
     if (profile.nftMinted) {
       alert('Profile cannot be edited after NFT is minted');
       return;
     }
+    // ⬇️ Prefill edit form
+    setEditForm({
+      name: profile.name || '',
+      username: profile.username || '',
+      bio: profile.bio || '',
+      imagePreview: profile.imagePreview || '',
+    });
     setIsEditing(true);
     setProfileSaved(false);
   };
 
-  const handleSave = async () => {
-    try {
-      localStorage.setItem(`profile-${address}`, JSON.stringify({ ...profile, ...editForm }));
-      setProfile({ ...profile, ...editForm });
-      setIsEditing(false);
-      setProfileSaved(true);
-    } catch (error) {
-      console.error('Error saving profile:', error);
-    }
+
+  const handleSave = () => {
+    const updatedProfile = {
+      ...profile,
+      ...editForm,
+    };
+
+    localStorage.setItem(`profile-${address}`, JSON.stringify(updatedProfile));
+    setProfile(updatedProfile);
+    setIsEditing(false);
+    setProfileSaved(true);
   };
+
 
   const handleMintNFT = async () => {
     if (!address) return;
@@ -50,6 +93,26 @@ const Profile: React.FC = () => {
       console.error('Error minting NFT:', error);
     } finally {
       setIsMinting(false);
+    }
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditForm((prev) => ({
+          ...prev,
+          imagePreview: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -93,41 +156,68 @@ const Profile: React.FC = () => {
 
           <div className="space-y-8">
             <div className="flex items-center gap-6">
-              {profile.imagePreview ? (
-                <img
-                  src={profile.imagePreview}
-                  alt={profile.name}
-                  className="w-24 h-24 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center">
-                  <User className="w-12 h-12 text-gray-300" />
-                </div>
-              )}
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+              />
+
+              <motion.div
+                whileHover={{ scale: isEditing ? 1.05 : 1 }}
+                whileTap={{ scale: isEditing ? 0.95 : 1 }}
+                onClick={isEditing ? handleImageClick : undefined}
+                className={`relative w-24 h-24 rounded-full ${isEditing ? 'cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all' : ''} overflow-hidden bg-gray-700 flex items-center justify-center`}
+              >
+                {(isEditing ? editForm.imagePreview : profile.imagePreview) ? (
+                  <img
+                    src={isEditing ? editForm.imagePreview : profile.imagePreview}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <ImageIcon className="w-8 h-8 text-gray-300" />
+                )}
+
+              </motion.div>
               <div>
                 {isEditing ? (
                   <div className="space-y-3">
+                    <div>
+                    <h3 className="text-xl font-semibold text-white">Name</h3>
                     <input
-                      type="text"
-                      value={editForm.name}
-                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      className="block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                      placeholder="Name"
-                    />
+                        type="text"
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        className="block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                        placeholder="Enter your name"
+                      />
+                    </div>
+
+                    <div>
+                    <h3 className="text-xl font-semibold text-white">Username</h3>
                     <input
-                      type="text"
-                      value={editForm.username}
-                      onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
-                      className="block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                      placeholder="Username"
-                    />
+                        type="text"
+                        value={editForm.username}
+                        onChange={(e) => setEditForm({ ...editForm, username: e.target.value })}
+                        className="block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                        placeholder="Enter your username"
+                      />
+                    </div>
                   </div>
                 ) : (
                   <>
                     <h2 className="text-2xl font-bold text-white">{profile.name}</h2>
                     <p className="text-gray-400">@{profile.username}</p>
+                    {address && (
+                      <p className="text-sm text-blue-400 mt-1 break-all">
+                        {address}
+                      </p>
+                    )}
                   </>
                 )}
+
               </div>
             </div>
 
