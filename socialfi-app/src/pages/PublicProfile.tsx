@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useRef } from 'react';
 import { useAccount } from 'wagmi';
-import { Check, Edit2, Image as ImageIcon } from 'lucide-react';
+import { Check, Edit2, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useProfileStore } from '../store/useProfileStore';
 
@@ -199,16 +199,27 @@ const PublicProfile = () => {
         }
     };
 
+    const handleRemoveImage = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent triggering the parent click handler
+        setEditForm((prev) => ({
+            ...prev,
+            imagePreview: '',
+        }));
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
     if (!profile) {
         return (
             <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-3xl mx-auto">
                     <div className="mb-6">
                         <button
-                            onClick={() => navigate('/dashboard')}
+                            onClick={() => navigate('/home')}
                             className="px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-base font-semibold rounded-xl shadow-md transition duration-200"
                         >
-                            ← Back to Dashboard
+                            ← Back to Home
                         </button>
                     </div>
                     <div className="flex justify-center items-center h-80 text-center">
@@ -231,10 +242,10 @@ const PublicProfile = () => {
             <div className="max-w-3xl mx-auto">
                 <div className="mb-6">
                     <button
-                        onClick={() => navigate('/dashboard')}
+                        onClick={() => navigate('/home')}
                         className="px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white text-base font-semibold rounded-xl shadow-md transition duration-200"
                     >
-                        ← Back to Dashboard
+                        ← Back to Home
                     </button>
                 </div>
 
@@ -301,11 +312,21 @@ const PublicProfile = () => {
                                 className={`relative w-24 h-24 rounded-full ${isEditing && isOwner ? 'cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all' : ''} overflow-hidden bg-gray-700 flex items-center justify-center`}
                             >
                                 {(isEditing ? editForm.imagePreview : profile.imagePreview) ? (
-                                    <img
-                                        src={isEditing ? editForm.imagePreview : profile.imagePreview}
-                                        alt="Profile"
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <div className="relative w-full h-full">
+                                        <img
+                                            src={isEditing ? editForm.imagePreview : profile.imagePreview}
+                                            alt="Profile"
+                                            className="w-full h-full object-cover"
+                                        />
+                                        {isEditing && (
+                                            <button
+                                                onClick={handleRemoveImage}
+                                                className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-black"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
+                                        )}
+                                    </div>
                                 ) : (
                                     <ImageIcon className="w-8 h-8 text-gray-300" />
                                 )}

@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing';
-import Dashboard from './pages/Dashboard';
+import Home from './pages/Home';
 import PublicProfile from './pages/PublicProfile';
+import CreatePost from './pages/CreatePost';
 import FollowingList from './pages/FollowingList';
 import FollowersList from './pages/FollowersList';
 import Layout from './components/Layout';
@@ -18,7 +19,8 @@ function App() {
         <Route element={<Layout />}>
           <Route index element={<Landing />} />
           <Route path="create-profile" element={<CreateProfile />} />
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="home" element={<Home />} />
+          <Route path="/create-post" element={<CreatePost />} />
           <Route path="/:username" element={<PublicProfile />} />
           <Route path="/:username/following" element={<FollowingList />} />
           <Route path="/:username/followers" element={<FollowersList />} />

@@ -74,7 +74,7 @@ const WalletConnect: React.FC = () => {
       }
       
       const hasProfile = checkProfile(address);
-      navigate(hasProfile ? '/dashboard' : '/create-profile');
+      navigate(hasProfile ? '/home' : '/create-profile');
     }
   }, [address, isConnected, navigate, chainId]);
 

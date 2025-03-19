@@ -4,14 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { useAccount, useDisconnect } from 'wagmi';
 import { LogOut, User } from 'lucide-react';
 import { useProfileStore } from '../store/useProfileStore';
+import PostComponent from '../components/Post';
+import { usePostStore, Post } from '../store/usePostStore';
 
-const Dashboard: React.FC = () => {
+const Home: React.FC = () => {
   const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const navigate = useNavigate();
 
   const profile = useProfileStore((state) => state.profile);
   const setProfile = useProfileStore((state) => state.setProfile);
+  const posts = usePostStore((state) => state.posts);
+  const visiblePosts: Post[] = posts.filter((p) => p.type === 'normal');
 
   const handleLogout = () => {
     disconnect();
@@ -33,8 +37,19 @@ const Dashboard: React.FC = () => {
       className="min-h-screen py-12"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-white">Welcome to SocialFi</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-2 sm:mb-0">Welcome to SocialFi</h1>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/create-post')}
+              className="mt-2 sm:mt-4 px-5 py-2 bg-purple-500 text-white rounded-lg font-semibold"
+            >
+              Create Post
+            </motion.button>
+          </div>
+
           <div className="flex items-center gap-4">
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -58,6 +73,7 @@ const Dashboard: React.FC = () => {
                 <p className="text-sm text-gray-300">@{profile.username}</p>
               </div>
             </motion.div>
+
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -70,11 +86,16 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
         <div className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
-          <p className="text-gray-300">Dashboard content coming soon...</p>
+          <h2 className="text-xl text-white font-semibold mb-4">Recent Posts</h2>
+          {visiblePosts.length > 0 ? (
+            visiblePosts.map((post) => <PostComponent key={post.id} post={post} />)
+          ) : (
+            <p className="text-gray-300">No posts yet.</p>
+          )}
         </div>
       </div>
     </motion.div>
   );
 };
 
-export default Dashboard;
+export default Home;

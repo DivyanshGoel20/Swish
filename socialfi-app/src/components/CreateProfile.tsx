@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Check, X, Image as ImageIcon } from 'lucide-react';
+import { Check, X, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 
@@ -16,7 +16,7 @@ const CreateProfile: React.FC = () => {
     const storedProfile = localStorage.getItem(profileKey);
 
     if (storedProfile) {
-      navigate('/dashboard');
+      navigate('/home');
     }
   }, [address, navigate]);
 
@@ -46,6 +46,15 @@ const CreateProfile: React.FC = () => {
     }
   };
 
+  const handleRemoveImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the parent click handler
+    setImagePreview(null);
+    setFormData({ ...formData, profileImage: null });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const checkUsername = async (username: string) => {
     const profiles = Object.values(localStorage)
       .map(item => {
@@ -64,7 +73,7 @@ const CreateProfile: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    const reservedUsernames = ["dashboard", "create-profile", "profile", "admin", "login"];
+    const reservedUsernames = ["home", "create-profile", "profile", "admin", "login", "create-post"];
     const enteredUsername = formData.username.toLowerCase();
   
     if (reservedUsernames.includes(enteredUsername)) {
@@ -88,7 +97,7 @@ const CreateProfile: React.FC = () => {
         following: [],
       }));
   
-      navigate('/dashboard');
+      navigate('/home');
     } catch (error) {
       console.error('Error creating profile:', error);
     } finally {
@@ -130,11 +139,19 @@ const CreateProfile: React.FC = () => {
                   className="relative w-32 h-32 rounded-full bg-gray-700 flex items-center justify-center cursor-pointer overflow-hidden hover:bg-gray-600 transition-colors"
                 >
                   {imagePreview ? (
-                    <img
-                      src={imagePreview}
-                      alt="Profile preview"
-                      className="w-full h-full object-cover"
-                    />
+                    <div className="relative w-full h-full">
+                      <img
+                        src={imagePreview}
+                        alt="Profile preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   ) : (
                     <ImageIcon className="w-8 h-8 text-gray-300" />
                   )}

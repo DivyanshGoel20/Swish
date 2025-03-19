@@ -38,7 +38,7 @@ const Layout = () => {
       }
 
       if (hasProfile && currentPath === '/create-profile') {
-        navigate('/dashboard');
+        navigate('/home');
       }
 
       // Always update profile in global store
