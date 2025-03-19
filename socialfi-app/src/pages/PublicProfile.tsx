@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useRef } from 'react';
 import { useAccount } from 'wagmi';
-import { Check, Edit2, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { Check, Edit2, Image as ImageIcon, Trash2, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useProfileStore } from '../store/useProfileStore';
+import TipButton from '../components/TipButton';
 
 const PublicProfile = () => {
 
@@ -257,17 +258,19 @@ const PublicProfile = () => {
                     <div className="flex justify-between items-center mb-8">
                         <div className="flex items-center gap-4">
                             <span
-                                className={`text-sm font-semibold px-3 py-1 rounded-full ${isOwner
-                                        ? 'bg-green-500/20 text-green-400'
-                                        : 'bg-white/10 text-white'
+                                className={`text-sm font-semibold px-3 py-1 rounded-full ${isOwner ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white'
                                     }`}
                             >
                                 {isOwner ? 'Your Profile' : `Viewing ${profile.name}'s Profile`}
                             </span>
-
                         </div>
 
                         <div className="flex items-center gap-4">
+                            {!isOwner && profile.address && (
+                                <TipButton recipient={profile.address} />
+                            )}
+
+
                             {isOwner && !isEditing && !profile.nftMinted && (
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}
@@ -284,8 +287,8 @@ const PublicProfile = () => {
                                 <button
                                     onClick={() => handleFollowToggle()}
                                     className={`px-6 py-2 rounded-lg font-semibold transition ${isFollowing
-                                        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                        : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                            ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                            : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
                                         }`}
                                 >
                                     {isFollowing ? 'Unfollow' : 'Follow'}
@@ -293,7 +296,6 @@ const PublicProfile = () => {
                             )}
                         </div>
                     </div>
-
 
                     <div className="space-y-8">
                         <div className="flex items-center gap-6">
