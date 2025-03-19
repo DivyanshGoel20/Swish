@@ -10,8 +10,8 @@ const Dashboard: React.FC = () => {
   const { disconnect } = useDisconnect();
   const navigate = useNavigate();
 
-const profile = useProfileStore((state) => state.profile);
-const setProfile = useProfileStore((state) => state.setProfile);
+  const profile = useProfileStore((state) => state.profile);
+  const setProfile = useProfileStore((state) => state.setProfile);
 
   const handleLogout = () => {
     disconnect();
@@ -20,8 +20,11 @@ const setProfile = useProfileStore((state) => state.setProfile);
   };
 
   const handleProfileClick = () => {
-    navigate('/profile');
+    if (profile?.username) {
+      navigate(`/${profile.username}`);
+    }
   };
+
 
   return (
     <motion.div

@@ -11,15 +11,15 @@ const CreateProfile: React.FC = () => {
 
   useEffect(() => {
     if (!address) return;
-  
+
     const profileKey = `profile-${address}`;
     const storedProfile = localStorage.getItem(profileKey);
-  
+
     if (storedProfile) {
       navigate('/dashboard');
     }
   }, [address, navigate]);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -63,20 +63,31 @@ const CreateProfile: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    const reservedUsernames = ["dashboard", "create-profile", "profile", "admin", "login"];
+    const enteredUsername = formData.username.toLowerCase();
+  
+    if (reservedUsernames.includes(enteredUsername)) {
+      alert("This username is not allowed. Please choose a different one.");
+      return;
+    }
+  
     if (!address || !usernameAvailable) return;
-
+  
     setIsSubmitting(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+  
       localStorage.setItem(`profile-${address}`, JSON.stringify({
         ...formData,
         imagePreview,
         address,
         nftMinted: false,
         createdAt: new Date().toISOString(),
+        followers: [],
+        following: [],
       }));
-
+  
       navigate('/dashboard');
     } catch (error) {
       console.error('Error creating profile:', error);
@@ -84,6 +95,7 @@ const CreateProfile: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
