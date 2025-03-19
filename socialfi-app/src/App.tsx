@@ -3,6 +3,7 @@ import Landing from './pages/Landing';
 import Home from './pages/Home';
 import PublicProfile from './pages/PublicProfile';
 import CreatePost from './pages/CreatePost';
+import Discover from './pages/Discover';
 import FollowingList from './pages/FollowingList';
 import FollowersList from './pages/FollowersList';
 import Layout from './components/Layout';
@@ -21,6 +22,7 @@ function App() {
           <Route path="create-profile" element={<CreateProfile />} />
           <Route path="home" element={<Home />} />
           <Route path="/create-post" element={<CreatePost />} />
+          <Route path="/discover" element={<Discover />} />
           <Route path="/:username" element={<PublicProfile />} />
           <Route path="/:username/following" element={<FollowingList />} />
           <Route path="/:username/followers" element={<FollowersList />} />

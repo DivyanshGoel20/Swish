@@ -73,7 +73,7 @@ const CreateProfile: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    const reservedUsernames = ["home", "create-profile", "profile", "admin", "login", "create-post"];
+    const reservedUsernames = ["home", "create-profile", "profile", "admin", "login", "create-post", "discover"];
     const enteredUsername = formData.username.toLowerCase();
   
     if (reservedUsernames.includes(enteredUsername)) {
