@@ -21,6 +21,10 @@ Built on the **Core Blockchain**, Swish lets users post, follow, tip, and build 
 
 ---
 
+## Smart Contract Address - 0x813dca1Bf5B9012c6fAf16b449AaD1d3ff513Dc9
+
+---
+
 ## 📦 Prerequisites
 
 To run this project locally, you'll need:
