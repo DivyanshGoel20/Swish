@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { useProfileStore } from '../store/useProfileStore';
 import TipButton from '../components/TipButton';
 import MintNFTModal from '../components/MintNFTModal';
+import UserPostsTabs from '../components/UserPostsTabs';
 
 const PublicProfile = () => {
 
@@ -446,6 +447,8 @@ const PublicProfile = () => {
                     </div>
                 </motion.div>
             </div>
+            <UserPostsTabs username={profile.username} />
+
         </div>
     );
 };
