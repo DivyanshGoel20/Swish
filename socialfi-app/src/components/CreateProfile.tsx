@@ -118,7 +118,7 @@ const CreateProfile: React.FC = () => {
             Create Your Profile
           </h2>
           <p className="mt-2 text-center text-sm text-gray-300">
-            Your gateway to the decentralized social network
+            Your gateway to the social network
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import { useProfileStore } from '../store/useProfileStore';
 import { motion } from 'framer-motion';
-import { Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon, Video as VideoIcon } from 'lucide-react';
 import { usePostStore, Post } from '../store/usePostStore';
 
 const CreatePost = () => {
@@ -14,21 +14,29 @@ const CreatePost = () => {
   const addPost = usePostStore((state) => state.addPost);
 
   const [postText, setPostText] = useState('');
-  const [postType, setPostType] = useState<'normal' | 'membership' | ''>('');
+  const [postType, setPostType] = useState<'normal' | 'membership'>('normal');
   const [image, setImage] = useState<string | null>(null);
+  const [video, setVideo] = useState<string | null>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      if (file.type.startsWith('image/')) {
+        setImage(result);
+        setVideo(null);
+      } else if (file.type.startsWith('video/')) {
+        setVideo(result);
+        setImage(null);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
-  const handleImageClick = () => {
+  const handleMediaClick = () => {
     fileInputRef.current?.click();
   };
 
@@ -46,8 +54,11 @@ const CreatePost = () => {
       type: postType,
       content: postText,
       image: image || undefined,
-      timestamp: Date.now(),
+      video: video || undefined,
+      timestamp: Date.now().toString(),
       walletAddress: address,
+      likes: [],
+      comments: [],
       user: {
         name: profile.name || 'Anonymous',
         username: profile.username,
@@ -58,8 +69,9 @@ const CreatePost = () => {
     addPost(newPost);
 
     setPostText('');
-    setPostType('');
+    setPostType('normal');
     setImage(null);
+    setVideo(null);
 
     navigate('/home');
   };
@@ -111,18 +123,18 @@ const CreatePost = () => {
               </select>
             </div>
 
-            {/* Image upload section */}
+            {/* Media upload */}
             <div>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 ref={fileInputRef}
-                onChange={handleImageUpload}
+                onChange={handleMediaUpload}
                 className="hidden"
               />
               <div
-                onClick={handleImageClick}
-                className="w-full h-48 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-700 transition relative"
+                onClick={handleMediaClick}
+                className="w-full h-60 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-700 transition relative"
               >
                 {image ? (
                   <div className="relative h-full w-full">
@@ -141,8 +153,28 @@ const CreatePost = () => {
                       Remove
                     </button>
                   </div>
+                ) : video ? (
+                  <div className="relative h-full w-full">
+                    <video
+                      src={video}
+                      controls
+                      className="h-full w-full object-contain rounded"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setVideo(null);
+                      }}
+                      className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded hover:bg-black"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 ) : (
-                  <ImageIcon className="w-8 h-8 text-gray-400" />
+                  <div className="flex flex-col items-center text-gray-400">
+                    <ImageIcon className="w-8 h-8 mb-1" />
+                    <VideoIcon className="w-8 h-8" />
+                  </div>
                 )}
               </div>
             </div>

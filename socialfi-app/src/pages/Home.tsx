@@ -38,8 +38,10 @@ const Home: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-white text-center sm:text-left mb-6">Welcome to SocialFi</h1>
-          
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 bg-clip-text text-transparent text-center sm:text-left mb-6">
+            Swish
+          </h1>
+
           <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
             {/* Left Side: Action Buttons */}
             <div className="flex flex-row sm:flex-row gap-3 w-full sm:w-auto">
@@ -104,7 +106,7 @@ const Home: React.FC = () => {
           <h2 className="text-2xl text-white font-semibold mb-6 pb-4 border-b border-white/10">Recent Posts</h2>
           <div className="space-y-6">
             {visiblePosts.length > 0 ? (
-              visiblePosts.map((post) => (
+              [...visiblePosts].reverse().map((post) => (
                 <div key={post.id} className="mb-6">
                   <PostComponent post={post} />
                 </div>

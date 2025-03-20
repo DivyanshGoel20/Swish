@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useRef } from 'react';
 import { useAccount } from 'wagmi';
-import { Check, Edit2, Image as ImageIcon, Trash2, Gift } from 'lucide-react';
+import { Check, Edit2, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { useProfileStore } from '../store/useProfileStore';
 import TipButton from '../components/TipButton';
+import MintNFTModal from '../components/MintNFTModal';
 
 const PublicProfile = () => {
 
@@ -20,8 +22,11 @@ const PublicProfile = () => {
     const { address: connectedAddress } = useAccount();
     const [profile, setProfile] = useState<any>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [isMinting, setIsMinting] = useState(false);
     const [profileSaved, setProfileSaved] = useState(false);
+    const [showMintModal, setShowMintModal] = useState(false);
+    const [isMinting, setIsMinting] = useState(false);
+
+
 
     // Use the profile store
     const storeProfile = useProfileStore((state) => state.profile);
@@ -157,27 +162,23 @@ const PublicProfile = () => {
         setProfileSaved(true);
     };
 
-    const handleMintNFT = async () => {
+    const handleMintNFT = () => {
         if (!isOwner || !connectedAddress) return;
+        setShowMintModal(true); // Instead of direct minting, open modal
+    };
 
-        setIsMinting(true);
-        try {
-            // Mock NFT minting - replace with actual implementation
-            await new Promise(resolve => setTimeout(resolve, 2000));
+    const handleMintConfirm = (price: number) => {
+        // This will be called from MintNFTModal when user confirms
+        const updatedProfile = { ...profile, nftMinted: true, nftPrice: price };
+        localStorage.setItem(`profile-${connectedAddress}`, JSON.stringify(updatedProfile));
+        setProfile(updatedProfile);
 
-            const updatedProfile = { ...profile, nftMinted: true };
-            localStorage.setItem(`profile-${connectedAddress}`, JSON.stringify(updatedProfile));
-            setProfile(updatedProfile);
-
-            // Update store if this is current user
-            if (storeProfile.username === username) {
-                setStoreProfile(updatedProfile);
-            }
-        } catch (error) {
-            console.error('Error minting NFT:', error);
-        } finally {
-            setIsMinting(false);
+        if (storeProfile.username === username) {
+            setStoreProfile(updatedProfile);
         }
+
+        toast.success("NFT minted successfully!");
+        setShowMintModal(false);
     };
 
     const handleImageClick = () => {
@@ -287,8 +288,8 @@ const PublicProfile = () => {
                                 <button
                                     onClick={() => handleFollowToggle()}
                                     className={`px-6 py-2 rounded-lg font-semibold transition ${isFollowing
-                                            ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-                                            : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                                        ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+                                        : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
                                         }`}
                                 >
                                     {isFollowing ? 'Unfollow' : 'Follow'}
@@ -431,6 +432,16 @@ const PublicProfile = () => {
                             <div className="p-4 bg-green-500/20 rounded-lg">
                                 <p className="text-green-400 font-semibold">Profile NFT has been minted! 🎉</p>
                             </div>
+                        )}
+                        
+                        {showMintModal && (
+                            <MintNFTModal
+                                onClose={() => setShowMintModal(false)}
+                                onConfirm={handleMintConfirm}
+                                name={profile.name}
+                                username={profile.username}
+                                isMinting={isMinting}
+                            />
                         )}
                     </div>
                 </motion.div>

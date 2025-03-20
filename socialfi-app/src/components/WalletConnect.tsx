@@ -86,9 +86,13 @@ const WalletConnect: React.FC = () => {
         transition={{ duration: 0.5 }}
         className="text-center max-w-2xl w-full"
       >
-        <h1 className="text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-          Welcome to SocialFi
-        </h1>
+        <h1 className="text-5xl font-bold mb-8 text-white">
+  Welcome to{' '}
+  <span className="bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 bg-clip-text text-transparent">
+    Swish
+  </span>
+</h1>
+
         <p className="text-xl mb-12 text-gray-300">
           Connect your wallet to enter the future of social networking
         </p>
