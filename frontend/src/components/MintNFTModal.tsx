@@ -1,30 +1,59 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import { NFTStorage, File } from 'nft.storage';
 
 interface MintNFTModalProps {
   name: string;
   username: string;
-  onConfirm: (price: number) => void;
+  onConfirm: (price: number, metadataURI: string) => void;
   onClose: () => void;
   isMinting: boolean;
 }
 
-const MintNFTModal: React.FC<MintNFTModalProps> = ({ name, username, onConfirm, onClose, isMinting }) => {
-const [price, setPrice] = useState("0.01");
+const MintNFTModal: React.FC<MintNFTModalProps> = ({
+  name,
+  username,
+  onConfirm,
+  onClose,
+  isMinting
+}) => {
+  const [price, setPrice] = useState("0.01");
 
   const isValidPrice = () => {
     const value = parseFloat(price);
     return value >= 0.01 && value <= 10;
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const parsedPrice = parseFloat(price);
     if (!isValidPrice()) {
       toast.error('Enter a valid price between 0.01 and 10 CORE');
       return;
     }
-    onConfirm(parsedPrice);
+
+    try {
+      toast.loading('Uploading metadata to IPFS...');
+      const client = new NFTStorage({
+        token: import.meta.env.VITE_NFT_STORAGE_KEY,
+      });
+
+      const metadata = await client.store({
+        name: name,
+        description: `Profile NFT for ${username}`,
+        image: new File([], 'placeholder.png'), // or skip this if you don't want an image
+        attributes: [{ trait_type: "Username", value: username }],
+        external_url: "https://swish.social",
+      });
+
+      toast.dismiss();
+      toast.success('Metadata uploaded!');
+      onConfirm(parsedPrice, metadata.url); // Return both price and metadata URI
+    } catch (error) {
+      toast.dismiss();
+      toast.error('Failed to upload metadata to IPFS');
+      console.error(error);
+    }
   };
 
   return (
@@ -54,34 +83,34 @@ const [price, setPrice] = useState("0.01");
           <label className="text-gray-300 block text-sm mb-1">Username</label>
           <input
             type="text"
-            value={`${username}`}
+            value={username}
             disabled
             className="w-full px-4 py-2 bg-gray-800/70 border border-gray-700 rounded text-white cursor-not-allowed"
           />
         </div>
 
         <div className="mb-4">
-  <label className="block text-sm font-medium text-white mb-1">
-    Set NFT Price (in CORE)
-  </label>
-  <input
-    type="number"
-    min={0.01}
-    max={10}
-    step={0.01}
-    value={price}
-    onChange={(e) => {
-        const value = parseFloat(e.target.value);
-        if (!isNaN(value) && value <= 10) {
-          setPrice(e.target.value);  // still a string
-        }
-      }}
-      
-    className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-  <p className="text-sm text-gray-400 mt-1">Maximum price allowed: <span className="text-purple-400 font-semibold">10 CORE</span></p>
-</div>
-
+          <label className="block text-sm font-medium text-white mb-1">
+            Set NFT Price (in CORE)
+          </label>
+          <input
+            type="number"
+            min={0.01}
+            max={10}
+            step={0.01}
+            value={price}
+            onChange={(e) => {
+              const value = parseFloat(e.target.value);
+              if (!isNaN(value) && value <= 10) {
+                setPrice(e.target.value);
+              }
+            }}
+            className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-sm text-gray-400 mt-1">
+            Maximum price allowed: <span className="text-purple-400 font-semibold">10 CORE</span>
+          </p>
+        </div>
 
         <div className="flex justify-end gap-3">
           <button

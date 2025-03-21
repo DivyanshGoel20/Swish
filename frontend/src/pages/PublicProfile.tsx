@@ -434,7 +434,7 @@ const PublicProfile = () => {
                                 <p className="text-green-400 font-semibold">Profile NFT has been minted! 🎉</p>
                             </div>
                         )}
-                        
+
                         {showMintModal && (
                             <MintNFTModal
                                 onClose={() => setShowMintModal(false)}
