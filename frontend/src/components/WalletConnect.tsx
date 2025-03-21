@@ -21,7 +21,7 @@ const WalletConnect: React.FC = () => {
 
   const addCoreTestnetToWallet = async () => {
     if (!window.ethereum) return false;
-    
+
     try {
       await window.ethereum.request({
         method: 'wallet_addEthereumChain',
@@ -46,16 +46,16 @@ const WalletConnect: React.FC = () => {
     try {
       setConnecting(true);
       setErrorMessage(null);
-      
+
       // First, make sure Core Testnet is added to the wallet
       await addCoreTestnetToWallet();
-      
+
       // Then connect with the wallet
-      await connect({ 
+      await connect({
         connector: injected(),
         chainId: CORE_TESTNET_CHAIN_ID
       });
-      
+
     } catch (error) {
       console.error('Failed to connect wallet:', error);
       setErrorMessage("Failed to connect wallet. Please make sure you have a web3 wallet installed and try again.");
@@ -72,7 +72,7 @@ const WalletConnect: React.FC = () => {
         setErrorMessage("Please switch to Core Testnet to continue.");
         return;
       }
-      
+
       const hasProfile = checkProfile(address);
       navigate(hasProfile ? '/home' : '/create-profile');
     }
@@ -87,22 +87,22 @@ const WalletConnect: React.FC = () => {
         className="text-center max-w-2xl w-full"
       >
         <h1 className="text-5xl font-bold mb-8 text-white">
-  Welcome to{' '}
-  <span className="bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 bg-clip-text text-transparent">
-    Swish
-  </span>
-</h1>
+          Welcome to{' '}
+          <span className="bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 bg-clip-text text-transparent">
+            Swish
+          </span>
+        </h1>
 
         <p className="text-xl mb-12 text-gray-300">
           Connect your wallet to enter the future of social networking
         </p>
-        
+
         {errorMessage && (
           <div className="py-3 px-4 mb-6 bg-red-500/20 text-red-300 rounded-lg text-center">
             {errorMessage}
           </div>
         )}
-        
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
