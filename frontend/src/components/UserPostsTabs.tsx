@@ -19,15 +19,22 @@ const UserPostsTabs: React.FC<UserPostsTabsProps> = ({ username }) => {
     );
 
     // Mock access check — replace with real NFT check logic
-    const hasAccess = true; // <-- Plug actual access check here later
+    // Simulated access check using localStorage
+    const hasAccess = (() => {
+        const ownedNFTsRaw = localStorage.getItem(`ownedNFTs-${address}`);
+        if (!ownedNFTsRaw) return false;
+        const ownedUsernames: string[] = JSON.parse(ownedNFTsRaw);
+        return ownedUsernames.includes(username);
+    })();
+
 
     return (
         <div className="mt-10">
             <div className="grid grid-cols-2 gap-4 mb-4 text-center">
                 <button
                     className={`w-full py-3 rounded-lg font-semibold transition ${activeTab === 'normal'
-                            ? 'bg-purple-500 text-white'
-                            : 'bg-gray-700 text-gray-300'
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-gray-700 text-gray-300'
                         }`}
                     onClick={() => setActiveTab('normal')}
                 >
@@ -35,8 +42,8 @@ const UserPostsTabs: React.FC<UserPostsTabsProps> = ({ username }) => {
                 </button>
                 <button
                     className={`w-full py-3 rounded-lg font-semibold transition ${activeTab === 'membership'
-                            ? 'bg-purple-500 text-white'
-                            : 'bg-gray-700 text-gray-300'
+                        ? 'bg-purple-500 text-white'
+                        : 'bg-gray-700 text-gray-300'
                         }`}
                     onClick={() => setActiveTab('membership')}
                 >
@@ -51,6 +58,21 @@ const UserPostsTabs: React.FC<UserPostsTabsProps> = ({ username }) => {
                     <p>This content is only available for members.</p>
                     <p className="mt-2">Please purchase the creator's NFT to unlock access.</p>
                     {/* You can add a Buy NFT button here later */}
+                    <button
+                        onClick={() => {
+                            const ownedNFTsRaw = localStorage.getItem(`ownedNFTs-${address}`);
+                            const owned = ownedNFTsRaw ? JSON.parse(ownedNFTsRaw) : [];
+                            if (!owned.includes(username)) {
+                                owned.push(username);
+                                localStorage.setItem(`ownedNFTs-${address}`, JSON.stringify(owned));
+                                window.location.reload(); // Reload to trigger UI update
+                            }
+                        }}
+                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+                    >
+                        Buy NFT
+                    </button>
+
                 </div>
             ) : (
                 <div className="space-y-6">
