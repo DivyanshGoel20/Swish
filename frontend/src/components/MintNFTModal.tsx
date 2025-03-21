@@ -31,30 +31,14 @@ const MintNFTModal: React.FC<MintNFTModalProps> = ({
       toast.error('Enter a valid price between 0.01 and 10 CORE');
       return;
     }
-
-    try {
-      toast.loading('Uploading metadata to IPFS...');
-      const client = new NFTStorage({
-        token: import.meta.env.VITE_NFT_STORAGE_KEY,
-      });
-
-      const metadata = await client.store({
-        name: name,
-        description: `Profile NFT for ${username}`,
-        image: new File([], 'placeholder.png'), // or skip this if you don't want an image
-        attributes: [{ trait_type: "Username", value: username }],
-        external_url: "https://swish.social",
-      });
-
-      toast.dismiss();
-      toast.success('Metadata uploaded!');
-      onConfirm(parsedPrice, metadata.url); // Return both price and metadata URI
-    } catch (error) {
-      toast.dismiss();
-      toast.error('Failed to upload metadata to IPFS');
-      console.error(error);
-    }
+  
+    // 🔧 Simulate metadata URI (fake)
+    const fakeMetadataURI = `ipfs://simulated/${username}`;
+  
+    // Directly call onConfirm without actual upload
+    onConfirm(parsedPrice, fakeMetadataURI);
   };
+  
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">

@@ -168,19 +168,25 @@ const PublicProfile = () => {
         setShowMintModal(true); // Instead of direct minting, open modal
     };
 
-    const handleMintConfirm = (price: number) => {
-        // This will be called from MintNFTModal when user confirms
-        const updatedProfile = { ...profile, nftMinted: true, nftPrice: price };
+    const handleMintConfirm = (price: number, metadataURI: string) => {
+        const updatedProfile = {
+          ...profile,
+          nftMinted: true,
+          nftPrice: price,
+          nftMetadataURI: metadataURI,
+        };
+      
         localStorage.setItem(`profile-${connectedAddress}`, JSON.stringify(updatedProfile));
         setProfile(updatedProfile);
-
+      
         if (storeProfile.username === username) {
-            setStoreProfile(updatedProfile);
+          setStoreProfile(updatedProfile);
         }
-
+      
         toast.success("NFT minted successfully!");
         setShowMintModal(false);
-    };
+      };
+      
 
     const handleImageClick = () => {
         if (isEditing && isOwner) {
